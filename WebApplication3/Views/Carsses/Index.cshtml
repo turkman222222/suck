@@ -1,0 +1,83 @@
+﻿@model IEnumerable<WebApplication3.Models.Carss>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.model)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.god_poiz)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.image)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Marks)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.strana)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.cveta)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.salonch)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.compl)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.model)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.god_poiz)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.image)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.price)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Marks.id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.strana.id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.cveta.id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.salonch.id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.compl.id)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

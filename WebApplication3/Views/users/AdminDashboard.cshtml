@@ -2,7 +2,92 @@
     ViewData["Title"] = "Панель администратора";
 }
 
-<h1>Добро пожаловать, администратор @User.Identity.Name!</h1>
-<p>Это панель администратора.</p>
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-danger text-white">
+                    <h4><i class="fas fa-tachometer-alt me-2"></i>Панель управления</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-users fa-3x text-danger mb-3"></i>
+                                    <h5>Пользователи</h5>
+                                    <a asp-controller="Users" asp-action="Index" class="btn btn-sm btn-outline-danger">
+                                        Управление <i class="fas fa-arrow-right ms-1"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-car fa-3x text-danger mb-3"></i>
+                                    <h5>Автомобили</h5>
+                                    <a asp-controller="Cars" asp-action="Index" class="btn btn-sm btn-outline-danger">
+                                        Управление <i class="fas fa-arrow-right ms-1"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <i class="fas fa-chart-bar fa-3x text-danger mb-3"></i>
+                                    <h5>Статистика</h5>
+                                    <a href="#" class="btn btn-sm btn-outline-danger">
+                                        Просмотр <i class="fas fa-arrow-right ms-1"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<!-- Add admin-specific content here -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-danger text-white">
+                    <h4><i class="fas fa-exclamation-circle me-2"></i>Последние действия</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Новый пользователь зарегистрирован
+                            <span class="badge bg-primary rounded-pill">только что</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Добавлен новый автомобиль
+                            <span class="badge bg-primary rounded-pill">5 мин назад</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header bg-danger text-white">
+                    <h4><i class="fas fa-chart-pie me-2"></i>Быстрая статистика</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <h3>24</h3>
+                            <p class="text-muted">Пользователей</p>
+                        </div>
+                        <div class="col-6">
+                            <h3>56</h3>
+                            <p class="text-muted">Автомобилей</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
