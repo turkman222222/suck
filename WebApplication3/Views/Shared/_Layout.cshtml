@@ -1,4 +1,22 @@
 ﻿<!DOCTYPE html>
+@if (User.Identity.IsAuthenticated)
+{
+    <li class="nav-item">
+        <span class="nav-link">Привет, @User.Identity.Name!</span>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="users" asp-action="Logout">Выйти</a>
+    </li>
+}
+else
+{
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="users" asp-action="Login">Войти</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="users" asp-action="Register">Регистрация</a>
+    </li>
+}
 <html lang="en">
 <head>
     <meta charset="utf-8" />
