@@ -11,6 +11,7 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
+                        <!-- Блок пользователей -->
                         <div class="col-md-4 mb-3">
                             <div class="card bg-light">
                                 <div class="card-body text-center">
@@ -22,25 +23,39 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Блок автомобилей -->
                         <div class="col-md-4 mb-3">
                             <div class="card bg-light">
                                 <div class="card-body text-center">
                                     <i class="fas fa-car fa-3x text-danger mb-3"></i>
                                     <h5>Автомобили</h5>
-                                    <a asp-controller="Cars" asp-action="Index" class="btn btn-sm btn-outline-danger">
+                                    <a asp-controller="Carsses" asp-action="Index" class="btn btn-sm btn-outline-danger">
                                         Управление <i class="fas fa-arrow-right ms-1"></i>
                                     </a>
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Блок справочников -->
                         <div class="col-md-4 mb-3">
                             <div class="card bg-light">
                                 <div class="card-body text-center">
-                                    <i class="fas fa-chart-bar fa-3x text-danger mb-3"></i>
-                                    <h5>Статистика</h5>
-                                    <a href="#" class="btn btn-sm btn-outline-danger">
-                                        Просмотр <i class="fas fa-arrow-right ms-1"></i>
-                                    </a>
+                                    <i class="fas fa-book fa-3x text-danger mb-3"></i>
+                                    <h5>Справочники</h5>
+                                    <div class="btn-group mt-2">
+                                        <button class="btn btn-sm btn-outline-danger dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                            Выбрать справочник
+                                        </button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" asp-controller="stranas" asp-action="Index"><i class="fas fa-globe me-2"></i>Страны</a></li>
+                                            <li><a class="dropdown-item" asp-controller="salonches" asp-action="Index"><i class="fas fa-store me-2"></i>Салоны</a></li>
+                                            <li><a class="dropdown-item" asp-controller="rols" asp-action="Index"><i class="fas fa-user-tag me-2"></i>Роли</a></li>
+                                            <li><a class="dropdown-item" asp-controller="Marks" asp-action="Index"><i class="fas fa-car me-2"></i>Марки</a></li>
+                                            <li><a class="dropdown-item" asp-controller="cvetas" asp-action="Index"><i class="fas fa-palette me-2"></i>Цвета</a></li>
+                                            <li><a class="dropdown-item" asp-controller="compls" asp-action="Index"><i class="fas fa-cogs me-2"></i>Комплектации</a></li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -51,6 +66,7 @@
     </div>
 
     <div class="row">
+        <!-- Последние действия -->
         <div class="col-md-6">
             <div class="card shadow-sm">
                 <div class="card-header bg-danger text-white">
@@ -66,10 +82,16 @@
                             Добавлен новый автомобиль
                             <span class="badge bg-primary rounded-pill">5 мин назад</span>
                         </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Обновлен справочник стран
+                            <span class="badge bg-primary rounded-pill">10 мин назад</span>
+                        </li>
                     </ul>
                 </div>
             </div>
         </div>
+
+        <!-- Быстрая статистика -->
         <div class="col-md-6">
             <div class="card shadow-sm">
                 <div class="card-header bg-danger text-white">
@@ -77,14 +99,24 @@
                 </div>
                 <div class="card-body">
                     <div class="row text-center">
-                        <div class="col-6">
-                            <h3>24</h3>
+                        <div class="col-4">
+                            <h3>@ViewBag.UserCount</h3>
                             <p class="text-muted">Пользователей</p>
                         </div>
-                        <div class="col-6">
-                            <h3>56</h3>
+                        <div class="col-4">
+                            <h3>@ViewBag.CarCount</h3>
                             <p class="text-muted">Автомобилей</p>
                         </div>
+                        <div class="col-4">
+                            <h3>@ViewBag.OrderCount</h3>
+                            <p class="text-muted">Бронирований</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="text-center mt-3">
+                        <a asp-controller="Reports" asp-action="Index" class="btn btn-sm btn-outline-danger">
+                            <i class="fas fa-file-alt me-1"></i> Полная статистика
+                        </a>
                     </div>
                 </div>
             </div>

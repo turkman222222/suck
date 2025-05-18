@@ -19,6 +19,7 @@ namespace WebApplication3.Controllers
 
         public usersController(ApplicationDbContext context)
         {
+
             _context = context;
         }
 
