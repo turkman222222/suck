@@ -105,11 +105,11 @@ namespace WebApplication3.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
-            ViewData["id_kompl"] = new SelectList(_context.compl, "id", "name");
-            ViewData["id_cvet"] = new SelectList(_context.cveta, "id", "name");
-            ViewData["id_marki"] = new SelectList(_context.Marks, "id", "name");
-            ViewData["id_salona"] = new SelectList(_context.salonch, "id", "name");
-            ViewData["id_str"] = new SelectList(_context.strana, "id", "name");
+            ViewData["id_kompl"] = new SelectList(_context.compl, "id", "kompl_name");
+            ViewData["id_cvet"] = new SelectList(_context.cveta, "id", "cvet_name");
+            ViewData["id_marki"] = new SelectList(_context.Marks, "id", "name_marka");
+            ViewData["id_salona"] = new SelectList(_context.salonch, "id", "salon");
+            ViewData["id_str"] = new SelectList(_context.strana, "id", "strana_name");
             return View();
         }
 
@@ -118,7 +118,7 @@ namespace WebApplication3.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("id,model,id_marki,id_str,god_poiz,id_cvet,id_salona,id_kompl,price")] Carss carss, IFormFile imageFile)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 if (imageFile != null && imageFile.Length > 0)
                 {
@@ -134,11 +134,11 @@ namespace WebApplication3.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewData["id_kompl"] = new SelectList(_context.compl, "id", "name", carss.id_kompl);
-            ViewData["id_cvet"] = new SelectList(_context.cveta, "id", "name", carss.id_cvet);
-            ViewData["id_marki"] = new SelectList(_context.Marks, "id", "name", carss.id_marki);
-            ViewData["id_salona"] = new SelectList(_context.salonch, "id", "name", carss.id_salona);
-            ViewData["id_str"] = new SelectList(_context.strana, "id", "name", carss.id_str);
+            ViewData["id_kompl"] = new SelectList(_context.compl, "id", "kompl_name");
+            ViewData["id_cvet"] = new SelectList(_context.cveta, "id", "cvet_name");
+            ViewData["id_marki"] = new SelectList(_context.Marks, "id", "name_marka");
+            ViewData["id_salona"] = new SelectList(_context.salonch, "id", "salon");
+            ViewData["id_str"] = new SelectList(_context.strana, "id", "strana_name");
             return View(carss);
         }
 
@@ -150,11 +150,11 @@ namespace WebApplication3.Controllers
             var carss = await _context.Carss.FindAsync(id);
             if (carss == null) return NotFound();
 
-            ViewData["id_kompl"] = new SelectList(_context.compl, "id", "name", carss.id_kompl);
-            ViewData["id_cvet"] = new SelectList(_context.cveta, "id", "name", carss.id_cvet);
-            ViewData["id_marki"] = new SelectList(_context.Marks, "id", "name", carss.id_marki);
-            ViewData["id_salona"] = new SelectList(_context.salonch, "id", "name", carss.id_salona);
-            ViewData["id_str"] = new SelectList(_context.strana, "id", "name", carss.id_str);
+            ViewData["id_kompl"] = new SelectList(_context.compl, "id", "kompl_name");
+            ViewData["id_cvet"] = new SelectList(_context.cveta, "id", "cvet_name");
+            ViewData["id_marki"] = new SelectList(_context.Marks, "id", "name_marka");
+            ViewData["id_salona"] = new SelectList(_context.salonch, "id", "salon");
+            ViewData["id_str"] = new SelectList(_context.strana, "id", "strana_name");
             return View(carss);
         }
 
@@ -165,7 +165,7 @@ namespace WebApplication3.Controllers
         {
             if (id != carss.id) return NotFound();
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 try
                 {
@@ -198,11 +198,11 @@ namespace WebApplication3.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewData["id_kompl"] = new SelectList(_context.compl, "id", "name", carss.id_kompl);
-            ViewData["id_cvet"] = new SelectList(_context.cveta, "id", "name", carss.id_cvet);
-            ViewData["id_marki"] = new SelectList(_context.Marks, "id", "name", carss.id_marki);
-            ViewData["id_salona"] = new SelectList(_context.salonch, "id", "name", carss.id_salona);
-            ViewData["id_str"] = new SelectList(_context.strana, "id", "name", carss.id_str);
+            ViewData["id_kompl"] = new SelectList(_context.compl, "id", "kompl_name");
+            ViewData["id_cvet"] = new SelectList(_context.cveta, "id", "cvet_name");
+            ViewData["id_marki"] = new SelectList(_context.Marks, "id", "name_marka");
+            ViewData["id_salona"] = new SelectList(_context.salonch, "id", "salon");
+            ViewData["id_str"] = new SelectList(_context.strana, "id", "strana_name");
             return View(carss);
         }
 

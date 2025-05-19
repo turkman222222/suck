@@ -12,7 +12,7 @@ namespace WebApplication3.Models
         public int id_cvet { get; set; }
         public int id_salona { get; set; }
         public int id_kompl { get; set; }
-        public byte[] image { get; set; }
+        public byte[]? image { get; set; }
         public int? price { get; set; }
 
         public Marks Marks { get; set; }
