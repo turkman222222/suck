@@ -1,72 +1,72 @@
-﻿@model WebApplication3.Models.Carss
+﻿
+@model WebApplication3.Models.Carss
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Информация об автомобиле";
 }
 
-<h1>Details</h1>
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-info text-white">
+            <h4 class="mb-0"><i class="fas fa-car me-2"></i>Информация об автомобиле</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <dl class="row">
+                        <dt class="col-sm-4">Модель:</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.model)</dd>
 
-<div>
-    <h4>Carss</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.model)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.model)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.god_poiz)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.god_poiz)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.image)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.image)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.price)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.price)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Marks)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Marks.id)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.strana)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.strana.id)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.cveta)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.cveta.id)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.salonch)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.salonch.id)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.compl)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.compl.id)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+                        <dt class="col-sm-4">Год выпуска:</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.god_poiz)</dd>
+
+                        <dt class="col-sm-4">Марка:</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.Marks.name_marka)</dd>
+
+                        <dt class="col-sm-4">Страна производитель:</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.strana.strana_name)</dd>
+
+                        <dt class="col-sm-4">Цвет:</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.cveta.cvet_name)</dd>
+
+                        <dt class="col-sm-4">Салон:</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.salonch.salon)</dd>
+
+                        <dt class="col-sm-4">Комплектация:</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.compl.kompl_name)</dd>
+
+                        <dt class="col-sm-4">Цена:</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.price) ₽</dd>
+                    </dl>
+
+                    @if (Model.image != null && Model.image.Length > 0)
+                    {
+                        <div class="mb-4">
+                            <h5>Изображение автомобиля:</h5>
+                            <img src="@Url.Action("GetImage", "Carsses", new { id = Model.id })"
+                                 class="img-fluid rounded" style="max-height: 300px;" alt="Изображение автомобиля" />
+                        </div>
+                    }
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+                        <a asp-action="Edit" asp-route-id="@Model?.id" class="btn btn-primary me-md-2">
+                            <i class="fas fa-edit me-1"></i> Редактировать
+                        </a>
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i> Назад к списку
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-car-side me-2"></i>Характеристики</h5>
+                            <p class="card-text">Здесь представлена полная информация о выбранном автомобиле.</p>
+                            <p class="card-text">Для внесения изменений нажмите кнопку "Редактировать".</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

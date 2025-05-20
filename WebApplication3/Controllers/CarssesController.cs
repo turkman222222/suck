@@ -36,6 +36,7 @@ namespace WebApplication3.Controllers
     decimal? minPrice,
     decimal? maxPrice)
         {
+            ViewBag.Context = _context;
             // Основной запрос с включением связанных данных
             var carsQuery = _context.Carss
                 .Include(c => c.Marks)
@@ -103,7 +104,16 @@ namespace WebApplication3.Controllers
 
             return View(await carsQuery.ToListAsync());
         }
-
+        [AllowAnonymous]
+        public IActionResult GetImage(int id)
+        {
+            var car = _context.Carss.Find(id);
+            if (car?.image != null)
+            {
+                return File(car.image, "image/jpeg"); // Или другой соответствующий MIME-тип
+            }
+            return NotFound();
+        }
         [HttpGet]
         public IActionResult IsFavorite(int carId)
         {
@@ -117,27 +127,7 @@ namespace WebApplication3.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ToggleFavorite(int carId)
-        {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            var favorite = await _context.izbr
-                .FirstOrDefaultAsync(i => i.car_id == carId && i.user_id == userId);
-
-            if (favorite == null)
-            {
-                // Добавление в избранное
-                _context.izbr.Add(new izbr { car_id = carId, user_id = userId });
-                await _context.SaveChangesAsync();
-                return Json(new { success = true, isFavorite = true, message = "Добавлено в избранное" });
-            }
-            else
-            {
-                // Удаление из избранного
-                _context.izbr.Remove(favorite);
-                await _context.SaveChangesAsync();
-                return Json(new { success = true, isFavorite = false, message = "Удалено из избранного" });
-            }
-        }
+       
 
         [Authorize]
         public async Task<IActionResult> izbrs()
@@ -173,11 +163,12 @@ namespace WebApplication3.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
-            ViewData["id_kompl"] = new SelectList(_context.compl, "id", "kompl_name");
-            ViewData["id_cvet"] = new SelectList(_context.cveta, "id", "cvet_name");
-            ViewData["id_marki"] = new SelectList(_context.Marks, "id", "name_marka");
-            ViewData["id_salona"] = new SelectList(_context.salonch, "id", "salon");
-            ViewData["id_str"] = new SelectList(_context.strana, "id", "strana_name");
+            ViewBag.id_marki = new SelectList(_context.Marks, "id", "name_marka");
+            ViewBag.id_str = new SelectList(_context.strana, "id", "strana_name");
+            ViewBag.id_cvet = new SelectList(_context.cveta, "id", "cvet_name");
+            ViewBag.id_salona = new SelectList(_context.salonch, "id", "salon");
+            ViewBag.id_kompl = new SelectList(_context.compl, "id", "kompl_name");
+            return View();
             return View();
         }
 
@@ -186,7 +177,7 @@ namespace WebApplication3.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("id,model,id_marki,id_str,god_poiz,id_cvet,id_salona,id_kompl,price")] Carss carss, IFormFile imageFile)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 if (imageFile != null && imageFile.Length > 0)
                 {
@@ -233,7 +224,7 @@ namespace WebApplication3.Controllers
         {
             if (id != carss.id) return NotFound();
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 try
                 {
@@ -281,12 +272,13 @@ namespace WebApplication3.Controllers
             }
 
             // Если что-то пошло не так, заново заполняем списки
-            ViewData["id_kompl"] = new SelectList(_context.compl, "id", "kompl_name", carss.id_kompl);
-            ViewData["id_cvet"] = new SelectList(_context.cveta, "id", "cvet_name", carss.id_cvet);
-            ViewData["id_marki"] = new SelectList(_context.Marks, "id", "name_marka", carss.id_marki);
-            ViewData["id_salona"] = new SelectList(_context.salonch, "id", "salon", carss.id_salona);
-            ViewData["id_str"] = new SelectList(_context.strana, "id", "strana_name", carss.id_str);
+            ViewData["id_kompl"] = new SelectList(_context.compl, "id", "id", carss.id_kompl);
+            ViewData["id_cvet"] = new SelectList(_context.cveta, "id", "id", carss.id_cvet);
+            ViewData["id_marki"] = new SelectList(_context.Marks, "id", "id", carss.id_marki);
+            ViewData["id_salona"] = new SelectList(_context.salonch, "id", "id", carss.id_salona);
+            ViewData["id_str"] = new SelectList(_context.strana, "id", "id", carss.id_str);
             return View(carss);
+            
         }
 
         [Authorize(Roles = "Admin")]
@@ -312,42 +304,54 @@ namespace WebApplication3.Controllers
 
             return View(car);
         }
+        [HttpPost]
+        public async Task<IActionResult> ToggleFavorite(int carId)
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Json(new { success = false, message = "Требуется авторизация" });
+            }
 
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
+            try
+            {
+                var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                var favorite = await _context.izbr
+                    .FirstOrDefaultAsync(i => i.car_id == carId && i.user_id == userId);
+
+                if (favorite == null)
+                {
+                    _context.izbr.Add(new izbr { car_id = carId, user_id = userId });
+                    await _context.SaveChangesAsync();
+                    return Json(new { success = true, isFavorite = true, message = "Добавлено в избранное" });
+                }
+                else
+                {
+                    _context.izbr.Remove(favorite);
+                    await _context.SaveChangesAsync();
+                    return Json(new { success = true, isFavorite = false, message = "Удалено из избранного" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Ошибка: " + ex.Message });
+            }
+        }
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             using (var transaction = await _context.Database.BeginTransactionAsync())
             {
-                try
+                var carss = await _context.Carss.FindAsync(id);
+                if (carss != null)
                 {
-                    // Сначала удаляем все записи из избранного для этого автомобиля
-                    var favorites = await _context.izbr
-                        .Where(i => i.car_id == id)
-                        .ToListAsync();
-
-                    _context.izbr.RemoveRange(favorites);
-                    await _context.SaveChangesAsync();
-
-                    // Затем удаляем сам автомобиль
-                    var car = await _context.Carss.FindAsync(id);
-                    if (car != null)
-                    {
-                        _context.Carss.Remove(car);
-                        await _context.SaveChangesAsync();
-                    }
-
-                    await transaction.CommitAsync();
-                    return RedirectToAction(nameof(Index));
+                    _context.Carss.Remove(carss);
                 }
-                catch
-                {
-                    await transaction.RollbackAsync();
-                    return RedirectToAction(nameof(Delete), new { id, saveChangesError = true });
-                }
+
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
         }
+      
     }
 }
 

@@ -1,6 +1,7 @@
 ﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
+    @RenderSection("Styles", required: false)
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Салон Василек</title>
@@ -130,7 +131,7 @@
         }
 
         .hero-section {
-            background: linear-gradient(rgba(0, 0, 0, 0.7), url('/images/car-dealership-bg.jpg');
+            background: linear-gradient(rgba(0, 0, 0, 0.7), url('/images/car-dealership-bg.jpg'));
             background-size: cover;
             background-position: center;
             color: white;
@@ -210,7 +211,7 @@
                         @if (User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="users" asp-action="@(User.IsInRole("Admin") ? "AdminDashboard" : "UserDashboard")">
+                                <a class="nav-link" asp-controller="users" asp-action="@(User .IsInRole("Admin") ? "AdminDashboard" : "User Dashboard")">
                                     <i class="fas fa-user-circle me-1"></i> Личный кабинет
                                 </a>
                             </li>
@@ -231,7 +232,7 @@
                         {
                             <li class="nav-item d-flex align-items-center">
                                 <span class="welcome-message">
-                                    <i class="fas fa-user me-1"></i> @User.Identity.Name
+                                    <i class="fas fa-user me-1"></i> @User .Identity.Name
                                 </span>
                             </li>
                             <li class="nav-item">
@@ -314,6 +315,8 @@
     <!-- Custom JS -->
     <script src="~/js/site.js" asp-append-version="true"></script>
 
-    @await RenderSectionAsync("Scripts", required: false)
+    @RenderSection("Scripts", required: false)
+
 </body>
 </html>
+

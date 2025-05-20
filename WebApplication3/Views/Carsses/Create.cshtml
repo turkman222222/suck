@@ -1,82 +1,159 @@
 ﻿@model WebApplication3.Models.Carss
+@using WebApplication3.Models
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Добавить автомобиль";
 }
 
-<h1>Create</h1>
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0"><i class="fas fa-car me-2"></i>Добавить новый автомобиль</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <form asp-action="Create" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
-<h4>Carss</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="model" class="control-label"></label>
-                <input asp-for="model" class="form-control" />
-                <span asp-validation-for="model" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="id_marki" class="control-label"></label>
-                <select asp-for="id_marki" class ="form-control" asp-items="ViewBag.id_marki"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="id_str" class="control-label"></label>
-                <select asp-for="id_str" class ="form-control" asp-items="ViewBag.id_str"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="god_poiz" class="control-label"></label>
-                <input asp-for="god_poiz" class="form-control" />
-                <span asp-validation-for="god_poiz" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="id_cvet" class="control-label"></label>
-                <select asp-for="id_cvet" class ="form-control" asp-items="ViewBag.id_cvet"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="id_salona" class="control-label"></label>
-                <select asp-for="id_salona" class ="form-control" asp-items="ViewBag.id_salona"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="id_kompl" class="control-label"></label>
-                <select asp-for="id_kompl" class ="form-control" asp-items="ViewBag.id_kompl"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="image" class="control-label">Изображение автомобиля</label>
-                <input type="file" name="imageFile" class="form-control-file" accept="image/*" />
-                <span asp-validation-for="image" class="text-danger"></span>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input asp-for="model" class="form-control" placeholder="Модель" required />
+                                    <label asp-for="model" class="control-label">Модель автомобиля</label>
+                                    <span asp-validation-for="model" class="text-danger"></span>
+                                </div>
+                            </div>
 
-                @if (Model?.image != null)
-                {
-                    <div class="mt-2">
-                        <img src="@Url.Action("GetImage", "Carsses", new { id = Model.id })"
-                             class="img-thumbnail" style="max-height: 200px;" alt="Текущее изображение" />
-                        <div class="form-check mt-2">
-                            <input class="form-check-input" type="checkbox" name="deleteImage" id="deleteImage" value="true">
-                            <label class="form-check-label" for="deleteImage">
-                                Удалить текущее изображение
-                            </label>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input asp-for="god_poiz" class="form-control" placeholder="Год выпуска" required
+                                           type="number" min="1900" max="@DateTime.Now.Year" />
+                                    <label asp-for="god_poiz" class="control-label">Год выпуска</label>
+                                    <span asp-validation-for="god_poiz" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select asp-for="id_marki" class="form-select" asp-items="ViewBag.id_marki" required>
+                                        <option value="">Выберите марку</option>
+                                    </select>
+                                    <label asp-for="id_marki" class="control-label">Марка автомобиля</label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select asp-for="id_str" class="form-select" asp-items="ViewBag.id_str" required>
+                                        <option value="">Выберите страну</option>
+                                    </select>
+                                    <label asp-for="id_str" class="control-label">Страна производитель</label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select asp-for="id_cvet" class="form-select" asp-items="ViewBag.id_cvet" required>
+                                        <option value="">Выберите цвет</option>
+                                    </select>
+                                    <label asp-for="id_cvet" class="control-label">Цвет автомобиля</label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select asp-for="id_salona" class="form-select" asp-items="ViewBag.id_salona" required>
+                                        <option value="">Выберите салон</option>
+                                    </select>
+                                    <label asp-for="id_salona" class="control-label">Салон</label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select asp-for="id_kompl" class="form-select" asp-items="ViewBag.id_kompl" required>
+                                        <option value="">Выберите комплектацию</option>
+                                    </select>
+                                    <label asp-for="id_kompl" class="control-label">Комплектация</label>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input asp-for="price" class="form-control" placeholder="Цена" required
+                                           type="text" pattern="\d+(\.\d{1,2})?" inputmode="decimal" />
+                                    <label asp-for="price" class="control-label">Цена (руб.)</label>
+                                    <span asp-validation-for="price" class="text-danger"></span>
+                                    <div class="form-text">Введите цену в формате: 100000 или 100000.50</div>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label asp-for="image" class="form-label">Изображение автомобиля</label>
+                                    <input type="file" name="imageFile" class="form-control" accept="image/*" />
+                                    <div class="form-text">Загрузите изображение автомобиля (JPG, PNG)</div>
+                                    <span asp-validation-for="image" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <button type="submit" class="btn btn-primary me-md-2">
+                                        <i class="fas fa-save me-1"></i> Сохранить
+                                    </button>
+                                    <a asp-action="Index" class="btn btn-outline-secondary">
+                                        <i class="fas fa-arrow-left me-1"></i> Назад к списку
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-info-circle me-2"></i>Информация</h5>
+                            <p class="card-text">Заполните все поля формы для добавления нового автомобиля в каталог.</p>
+                            <p class="card-text">Убедитесь, что все данные корректны перед сохранением.</p>
                         </div>
                     </div>
-                }
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="price" class="control-label"></label>
-                <input asp-for="price" class="form-control" />
-                <span asp-validation-for="price" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        // Валидация формы
+        (function () {
+            'use strict'
+
+            var forms = document.querySelectorAll('.needs-validation')
+
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+
+        // Обработчик для поля цены
+        document.querySelector('input[name="price"]').addEventListener('input', function (e) {
+            this.value = this.value.replace(/[^0-9.]/g, '')
+                .replace(/(\..*)\./g, '$1')
+                .replace(/(\.\d{2})\d+/g, '$1');
+        });
+    </script>
 }

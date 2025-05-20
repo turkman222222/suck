@@ -140,21 +140,28 @@
         }
 
         function toggleFavorite(carId) {
-            $.post('@Url.Action("ToggleFavorite", "Carsses")', { carId: carId }, function (data) {
-                if (data.success) {
-                    var button = $(`button[data-car-id="${carId}"]`);
-                    if (data.isFavorite) {
-                        button.html('<i class="fas fa-heart text-danger"></i> В избранном');
-                        button.removeClass('btn-outline-success').addClass('btn-danger');
+            $.post('@Url.Action("ToggleFavorite", "Carsses")', { carId: carId })
+                .done(function (data) {
+                    if (data.success) {
+                        var button = $(`button[data-car-id="${carId}"]`);
+                        if (data.isFavorite) {
+                            button.html('<i class="fas fa-heart text-danger"></i> В избранном');
+                            button.removeClass('btn-outline-success').addClass('btn-danger');
+                        } else {
+                            button.html('<i class="far fa-heart"></i> В избранное');
+                            button.removeClass('btn-danger').addClass('btn-outline-success');
+                        }
+                        toastr.success(data.message);
                     } else {
-                        button.html('<i class="far fa-heart"></i> В избранное');
-                        button.removeClass('btn-danger').addClass('btn-outline-success');
+                        toastr.warning(data.message);
+                        if (data.message.includes("авторизация")) {
+                            window.location.href = '@Url.Action("Login", "Account")';
+                        }
                     }
-                    toastr.success(data.message);
-                }
-            }).fail(function () {
-                toastr.error('Произошла ошибка');
-            });
+                })
+                .fail(function () {
+                    toastr.error('Произошла ошибка при обработке запроса');
+                });
         }
     </script>
 }
