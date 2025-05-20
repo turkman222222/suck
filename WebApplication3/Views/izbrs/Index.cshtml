@@ -1,0 +1,94 @@
+﻿@model IEnumerable<WebApplication3.Models.izbr>
+
+@{
+    ViewData["Title"] = "Избранные автомобили";
+}
+
+<div class="container mt-4">
+    <h1><i class="fas fa-heart text-danger"></i> @ViewData["Title"]</h1>
+
+    @if (Model.Any())
+    {
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        @if (item.Carss.image != null)
+                        {
+                            <img src="@Url.Action("GetImage", "Carsses", new { id = item.Carss.id })"
+                                 class="card-img-top" alt="@item.Carss.model" style="height: 200px; object-fit: cover;">
+                        }
+                        else
+                        {
+                            <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center"
+                                 style="height: 200px;">
+                                <i class="fas fa-car fa-4x text-light"></i>
+                            </div>
+                        }
+                        <div class="card-body">
+                            <h5 class="card-title">@item.Carss.model</h5>
+                            <p class="card-text">
+                                <strong>Марка:</strong> @item.Carss.Marks?.name_marka<br>
+                                <strong>Цена:</strong> @item.Carss.price?.ToString("N0") руб.<br>
+                                <strong>Цвет:</strong> @item.Carss.cveta?.cvet_name<br>
+                                <strong>Год:</strong> @item.Carss.god_poiz
+                            </p>
+                        </div>
+                        <div class="card-footer">
+                            <div class="d-flex justify-content-between">
+                                <a asp-controller="Carsses" asp-action="Details" asp-route-id="@item.Carss.id"
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-info-circle"></i> Подробнее
+                                </a>
+                                <form asp-action="Remove" method="post">
+                                    <input type="hidden" name="id" value="@item.id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger remove-favorite">
+                                        <i class="fas fa-heart-broken"></i> Удалить
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i> У вас пока нет избранных автомобилей
+        </div>
+        <a asp-controller="Carsses" asp-action="Index" class="btn btn-primary">
+            <i class="fas fa-car me-1"></i> Перейти в каталог
+        </a>
+    }
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.remove-favorite').click(function (e) {
+                e.preventDefault();
+                var form = $(this).closest('form');
+
+                $.post(form.attr('action'), form.serialize())
+                    .done(function () {
+                        form.closest('.col-md-4').fadeOut(300, function () {
+                            $(this).remove();
+                            if ($('.card').length === 0) {
+                                location.reload();
+                            }
+                        });
+                    })
+                    .fail(function () {
+                        alert('Ошибка при удалении автомобиля из избранного. Пожалуйста, попробуйте еще раз.');
+                    });
+            });
+        });
+    </script>
+}

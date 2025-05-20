@@ -33,6 +33,7 @@ namespace WebApplication3.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
+
         public async Task<IActionResult> Login(string login, string password)
         {
             // Ищем пользователя по логину и паролю (без хэширования)
