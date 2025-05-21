@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.Data.SqlClient;
+using Microsoft.IdentityModel.Tokens;
 
 namespace WebApplication3.Controllers
 {
@@ -25,122 +26,108 @@ namespace WebApplication3.Controllers
             _context = context;
         }
 
-        // GET: Carsses
         [AllowAnonymous]
-     
-        public async Task<IActionResult> Index(
-    string searchString,
-    int? markaid,
-    string sortOrder,
-    string filterBrand,
-    decimal? minPrice,
-    decimal? maxPrice)
+        public async Task<IActionResult> Index(string searchString, string filterBrand,
+                                              string minPrice, string maxPrice, string sortOrder)
         {
-            ViewBag.Context = _context;
-            // Основной запрос с включением связанных данных
-            var carsQuery = _context.Carss
-                .Include(c => c.Marks)
-                .Include(c => c.strana)
-                .Include(c => c.cveta)
-                .Include(c => c.salonch)
-                .Include(c => c.compl)
-                .AsQueryable();
+            IQueryable<Carss> carsQuery = _context.Carss.Include(c => c.Marks);
 
-            // Фильтр по поисковой строке (модели)
             if (!string.IsNullOrEmpty(searchString))
             {
                 carsQuery = carsQuery.Where(c => c.model.Contains(searchString));
             }
 
-            // Фильтр по марке (ID)
-            if (markaid.HasValue)
-            {
-                carsQuery = carsQuery.Where(c => c.id_marki == markaid.Value);
-            }
-
-            // Фильтр по марке (названию)
             if (!string.IsNullOrEmpty(filterBrand))
             {
                 carsQuery = carsQuery.Where(c => c.Marks.name_marka == filterBrand);
             }
 
-            // Фильтр по минимальной цене
-            if (minPrice.HasValue)
+            if (!string.IsNullOrEmpty(minPrice) && decimal.TryParse(minPrice, out decimal minPriceValue))
             {
-                carsQuery = carsQuery.Where(c => c.price >= minPrice.Value);
+                carsQuery = carsQuery.Where(c => c.price >= minPriceValue);
             }
 
-            // Фильтр по максимальной цене
-            if (maxPrice.HasValue)
+            if (!string.IsNullOrEmpty(maxPrice) && decimal.TryParse(maxPrice, out decimal maxPriceValue))
             {
-                carsQuery = carsQuery.Where(c => c.price <= maxPrice.Value);
+                carsQuery = carsQuery.Where(c => c.price <= maxPriceValue);
             }
 
-            // Сортировка
-            switch (sortOrder)
-            {
-                case "price_desc":
-                    carsQuery = carsQuery.OrderByDescending(c => c.price);
-                    break;
-                case "price_asc":
-                    carsQuery = carsQuery.OrderBy(c => c.price);
-                    break;
-                default:
-                    carsQuery = carsQuery.OrderBy(c => c.id);
-                    break;
-            }
-
-            // Сохраняем параметры фильтрации для представления
-            ViewData["CurrentSort"] = sortOrder;
             ViewData["PriceSortParm"] = sortOrder == "price_asc" ? "price_desc" : "price_asc";
-            ViewData["BrandFilter"] = filterBrand;
+
+            carsQuery = sortOrder switch
+            {
+                "price_desc" => carsQuery.OrderByDescending(c => c.price),
+                "price_asc" => carsQuery.OrderBy(c => c.price),
+                _ => carsQuery.OrderBy(c => c.id)
+            };
+
+            ViewBag.Brands = await _context.Marks.Select(m => new { m.name_marka })
+                                                .Distinct()
+                                                .ToListAsync();
+
             ViewData["SearchString"] = searchString;
+            ViewData["BrandFilter"] = filterBrand;
             ViewData["MinPrice"] = minPrice;
             ViewData["MaxPrice"] = maxPrice;
-
-            // Получаем список всех марок для dropdown
-            ViewBag.Brands = await _context.Marks.ToListAsync();
-            ViewBag.MarkaId = new SelectList(_context.Marks, "id", "name_marka", markaid);
+            ViewData["SortOrder"] = sortOrder;
 
             return View(await carsQuery.ToListAsync());
         }
         [AllowAnonymous]
         public IActionResult GetImage(int id)
         {
-            var car = _context.Carss.Find(id);
+            var car = _context.Carss.FirstOrDefault(c => c.id == id);
             if (car?.image != null)
             {
-                return File(car.image, "image/jpeg"); // Или другой соответствующий MIME-тип
+                return File(car.image, "image/jpeg"); // или другой соответствующий MIME-тип
             }
             return NotFound();
         }
-        [HttpGet]
-        public IActionResult IsFavorite(int carId)
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> ToggleFavorite(int carId)
         {
-            if (!User.Identity.IsAuthenticated)
-                return Json(new { isFavorite = false });
+            try
+            {
+                var userId = GetCurrentUserId();
+                Console.WriteLine($"UserId: {userId}, CarId: {carId}");
 
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            var isFavorite = _context.izbr.Any(i => i.car_id == carId && i.user_id == userId);
+                var favorite = await _context.izbr
+                    .FirstOrDefaultAsync(i => i.user_id == userId && i.car_id == carId);
+
+                if (favorite == null)
+                {
+                    _context.izbr.Add(new izbr { user_id = userId, car_id = carId });
+                    await _context.SaveChangesAsync();
+                    return Json(new { success = true, isFavorite = true, message = "Автомобиль добавлен в избранное" });
+                }
+                else
+                {
+                    _context.izbr.Remove(favorite);
+                    await _context.SaveChangesAsync();
+                    return Json(new { success = true, isFavorite = false, message = "Автомобиль удален из избранного" });
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return Json(new { success = false, message = "Произошла ошибка: " + ex.Message });
+            }
+        }
+
+        [Authorize]
+        public async Task<IActionResult> IsFavorite(int carId)
+        {
+            var userId = GetCurrentUserId();
+            var isFavorite = await _context.izbr
+                .AnyAsync(i => i.user_id == userId && i.car_id == carId);
 
             return Json(new { isFavorite });
         }
 
-        [HttpPost]
-       
-
-        [Authorize]
-        public async Task<IActionResult> izbrs()
+        private int GetCurrentUserId()
         {
-            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
-            var favoriteCars = await _context.izbr
-                .Where(i => i.user_id == userId)
-                .Include(i => i.Carss)
-                .ThenInclude(c => c.Marks)
-                .Select(i => i.Carss)
-                .ToListAsync();
-
-            return View(favoriteCars);
+            return int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
         }
 
         [AllowAnonymous]
@@ -169,7 +156,7 @@ namespace WebApplication3.Controllers
             ViewBag.id_salona = new SelectList(_context.salonch, "id", "salon");
             ViewBag.id_kompl = new SelectList(_context.compl, "id", "kompl_name");
             return View();
-            return View();
+           
         }
 
         [HttpPost]
@@ -304,38 +291,8 @@ namespace WebApplication3.Controllers
 
             return View(car);
         }
-        [HttpPost]
-        public async Task<IActionResult> ToggleFavorite(int carId)
-        {
-            if (!User.Identity.IsAuthenticated)
-            {
-                return Json(new { success = false, message = "Требуется авторизация" });
-            }
-
-            try
-            {
-                var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-                var favorite = await _context.izbr
-                    .FirstOrDefaultAsync(i => i.car_id == carId && i.user_id == userId);
-
-                if (favorite == null)
-                {
-                    _context.izbr.Add(new izbr { car_id = carId, user_id = userId });
-                    await _context.SaveChangesAsync();
-                    return Json(new { success = true, isFavorite = true, message = "Добавлено в избранное" });
-                }
-                else
-                {
-                    _context.izbr.Remove(favorite);
-                    await _context.SaveChangesAsync();
-                    return Json(new { success = true, isFavorite = false, message = "Удалено из избранного" });
-                }
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = "Ошибка: " + ex.Message });
-            }
-        }
+        
+      
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {

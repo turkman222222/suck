@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using WebApplication3.Models;
 
@@ -19,9 +20,30 @@ namespace WebApplication3.Controllers
         }
 
         // GET: Marks
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder, string currentFilter, string searchString)
         {
-            return View(await _context.Marks.ToListAsync());
+            ViewData["CurrentFilter"] = searchString;
+            ViewData["NameSortParm"] = String.IsNullOrEmpty(sortOrder) ? "name_desc" : "";
+
+            var marks = from m in _context.Marks
+                        select m;
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                marks = marks.Where(m => m.name_marka.Contains(searchString));
+            }
+
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    marks = marks.OrderByDescending(m => m.name_marka);
+                    break;
+                default:
+                    marks = marks.OrderBy(m => m.name_marka);
+                    break;
+            }
+
+            return View(await marks.AsNoTracking().ToListAsync());
         }
 
         // GET: Marks/Details/5

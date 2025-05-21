@@ -1,54 +1,74 @@
 ﻿@model WebApplication3.Models.user
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Редактирование пользователя";
 }
 
-<h1>Edit</h1>
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h2><i class="fas fa-user-edit"></i> @ViewData["Title"]</h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <form asp-action="Edit">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input type="hidden" asp-for="id_user" />
 
-<h4>user</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="id_user" />
-            <div class="form-group">
-                <label asp-for="user_name" class="control-label"></label>
-                <input asp-for="user_name" class="form-control" />
-                <span asp-validation-for="user_name" class="text-danger"></span>
+                        <div class="form-group mb-3">
+                            <label asp-for="user_name" class="form-label fw-bold"></label>
+                            <input asp-for="user_name" class="form-control" />
+                            <span asp-validation-for="user_name" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="mail" class="form-label fw-bold"></label>
+                            <input asp-for="mail" class="form-control" />
+                            <span asp-validation-for="mail" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="login" class="form-label fw-bold"></label>
+                            <input asp-for="login" class="form-control" />
+                            <span asp-validation-for="login" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="password" class="form-label fw-bold"></label>
+                            <input asp-for="password" class="form-control" type="password" />
+                            <span asp-validation-for="password" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="rol_id" class="form-label fw-bold"></label>
+                            <select asp-for="rol_id" class="form-control" asp-items="ViewBag.rol_id">
+                                <option value="">-- Выберите роль --</option>
+                            </select>
+                            <span asp-validation-for="rol_id" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Сохранить
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Назад к списку
+                            </a>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="mail" class="control-label"></label>
-                <input asp-for="mail" class="form-control" />
-                <span asp-validation-for="mail" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="login" class="control-label"></label>
-                <input asp-for="login" class="form-control" />
-                <span asp-validation-for="login" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="password" class="control-label"></label>
-                <input asp-for="password" class="form-control" />
-                <span asp-validation-for="password" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="rol_id" class="control-label"></label>
-                <select asp-for="rol_id" class="form-control" asp-items="ViewBag.rol_id"></select>
-                <span asp-validation-for="rol_id" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+@section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+}
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

@@ -9,22 +9,23 @@ using WebApplication3.Models;
 
 namespace WebApplication3.Controllers
 {
-    public class cvetasController : Controller
+    public class users1Controller : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public cvetasController(ApplicationDbContext context)
+        public users1Controller(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: cvetas
+        // GET: users1
         public async Task<IActionResult> Index()
         {
-            return View(await _context.cveta.ToListAsync());
+            var applicationDbContext = _context.user.Include(u => u.rol);
+            return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: cvetas/Details/5
+        // GET: users1/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -32,39 +33,42 @@ namespace WebApplication3.Controllers
                 return NotFound();
             }
 
-            var cveta = await _context.cveta
-                .FirstOrDefaultAsync(m => m.id == id);
-            if (cveta == null)
+            var user = await _context.user
+                .Include(u => u.rol)
+                .FirstOrDefaultAsync(m => m.id_user == id);
+            if (user == null)
             {
                 return NotFound();
             }
 
-            return View(cveta);
+            return View(user);
         }
 
-        // GET: cvetas/Create
+        // GET: users1/Create
         public IActionResult Create()
         {
+            ViewData["rol_id"] = new SelectList(_context.rol, "id", "id");
             return View();
         }
 
-        // POST: cvetas/Create
+        // POST: users1/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("id,cvet_name")] cveta cveta)
+        public async Task<IActionResult> Create([Bind("id_user,user_name,mail,login,password,rol_id")] user user)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                _context.Add(cveta);
+                _context.Add(user);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(cveta);
+            ViewData["rol_id"] = new SelectList(_context.rol, "id", "id", user.rol_id);
+            return View(user);
         }
 
-        // GET: cvetas/Edit/5
+        // GET: users1/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -72,36 +76,37 @@ namespace WebApplication3.Controllers
                 return NotFound();
             }
 
-            var cveta = await _context.cveta.FindAsync(id);
-            if (cveta == null)
+            var user = await _context.user.FindAsync(id);
+            if (user == null)
             {
                 return NotFound();
             }
-            return View(cveta);
+            ViewData["rol_id"] = new SelectList(_context.rol, "id", "id", user.rol_id);
+            return View(user);
         }
 
-        // POST: cvetas/Edit/5
+        // POST: users1/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("id,cvet_name")] cveta cveta)
+        public async Task<IActionResult> Edit(int id, [Bind("id_user,user_name,mail,login,password,rol_id")] user user)
         {
-            if (id != cveta.id)
+            if (id != user.id_user)
             {
                 return NotFound();
             }
 
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(cveta);
+                    _context.Update(user);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!cvetaExists(cveta.id))
+                    if (!userExists(user.id_user))
                     {
                         return NotFound();
                     }
@@ -112,10 +117,11 @@ namespace WebApplication3.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(cveta);
+            ViewData["rol_id"] = new SelectList(_context.rol, "id", "id", user.rol_id);
+            return View(user);
         }
 
-        // GET: cvetas/Delete/5
+        // GET: users1/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -123,34 +129,35 @@ namespace WebApplication3.Controllers
                 return NotFound();
             }
 
-            var cveta = await _context.cveta
-                .FirstOrDefaultAsync(m => m.id == id);
-            if (cveta == null)
+            var user = await _context.user
+                .Include(u => u.rol)
+                .FirstOrDefaultAsync(m => m.id_user == id);
+            if (user == null)
             {
                 return NotFound();
             }
 
-            return View(cveta);
+            return View(user);
         }
 
-        // POST: cvetas/Delete/5
+        // POST: users1/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var cveta = await _context.cveta.FindAsync(id);
-            if (cveta != null)
+            var user = await _context.user.FindAsync(id);
+            if (user != null)
             {
-                _context.cveta.Remove(cveta);
+                _context.user.Remove(user);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool cvetaExists(int id)
+        private bool userExists(int id)
         {
-            return _context.cveta.Any(e => e.id == id);
+            return _context.user.Any(e => e.id_user == id);
         }
     }
 }

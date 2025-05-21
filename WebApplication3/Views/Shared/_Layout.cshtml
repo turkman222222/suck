@@ -131,7 +131,7 @@
         }
 
         .hero-section {
-            background: linear-gradient(rgba(0, 0, 0, 0.7), url('/images/car-dealership-bg.jpg'));
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/images/car-dealership-bg.jpg');
             background-size: cover;
             background-position: center;
             color: white;
@@ -177,6 +177,57 @@
             padding: 20px;
             margin: 20px 0;
         }
+
+        /* Стили для главной страницы */
+        .home-hero {
+            min-height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+
+        .home-features {
+            padding: 4rem 0;
+        }
+
+        .feature-box {
+            padding: 2rem;
+            text-align: center;
+            border-radius: 0.5rem;
+            transition: all 0.3s;
+        }
+
+            .feature-box:hover {
+                transform: translateY(-10px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            color: var(--secondary-color);
+        }
+
+        /* Стили для страницы политики */
+        .privacy-container {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            padding: 3rem;
+        }
+
+        .privacy-section {
+            margin-bottom: 2rem;
+        }
+
+        .privacy-title {
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
     </style>
 </head>
 <body>
@@ -210,18 +261,19 @@
                         </li>
                         @if (User.Identity.IsAuthenticated)
                         {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="users" asp-action="@(User .IsInRole("Admin") ? "AdminDashboard" : "User Dashboard")">
-                                    <i class="fas fa-user-circle me-1"></i> Личный кабинет
-                                </a>
-                            </li>
-
                             @if (User.IsInRole("Admin"))
                             {
                                 <li class="nav-item">
                                     <a class="nav-link" asp-controller="users" asp-action="Index">
                                         <i class="fas fa-users me-1"></i> Пользователи
                                     </a>
+
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="users" asp-action="AdminDashboard">
+                                        <i class="fas fa-users me-1"></i> панель
+                                    </a>
+
                                 </li>
                             }
                         }
@@ -232,7 +284,7 @@
                         {
                             <li class="nav-item d-flex align-items-center">
                                 <span class="welcome-message">
-                                    <i class="fas fa-user me-1"></i> @User .Identity.Name
+                                    <i class="fas fa-user me-1"></i> @User.Identity.Name
                                 </span>
                             </li>
                             <li class="nav-item">
@@ -272,6 +324,144 @@
         </main>
     </div>
 
+    <!-- Содержимое главной страницы -->
+    @if (ViewContext.RouteData.Values["action"].ToString() == "Index" && ViewContext.RouteData.Values["controller"].ToString() == "Home")
+    {
+        <div class="home-hero" style="background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/images/car-dealership-bg.jpg'); background-size: cover; background-position: center;">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <h1 class="display-4 fw-bold mb-4 text-white">Добро пожаловать в наш автосалон</h1>
+                        <p class="lead mb-4 text-white">Лучший выбор автомобилей по выгодным ценам</p>
+                        <div class="d-flex gap-3">
+                            <a href="/Carsses" class="btn btn-primary btn-lg px-4">
+                                <i class="fas fa-car me-2"></i> Каталог авто
+                            </a>
+                            <a href="#features" class="btn btn-outline-light btn-lg px-4">
+                                <i class="fas fa-info-circle me-2"></i> Узнать больше
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 d-none d-lg-block">
+                        <img src="https://nastol.net/wallpaper/middle/106/honda-acura-nsx-widebody-khonda-akura-derevya.jpg" alt="Автомобиль" class="img-fluid rounded shadow">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="features" class="py-5 bg-light">
+            <div class="container">
+                <h2 class="text-center mb-5">Почему выбирают нас</h2>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center p-4">
+                                <div class="feature-icon mb-3">
+                                    <i class="fas fa-check-circle fa-3x text-primary"></i>
+                                </div>
+                                <h3>Гарантия качества</h3>
+                                <p>Все автомобили проходят тщательную проверку перед продажей</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center p-4">
+                                <div class="feature-icon mb-3">
+                                    <i class="fas fa-tag fa-3x text-primary"></i>
+                                </div>
+                                <h3>Лучшие цены</h3>
+                                <p>Гибкая система скидок и выгодные условия кредитования</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center p-4">
+                                <div class="feature-icon mb-3">
+                                    <i class="fas fa-headset fa-3x text-primary"></i>
+                                </div>
+                                <h3>Поддержка 24/7</h3>
+                                <p>Круглосуточная помощь нашим клиентам</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="py-5">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <h2 class="fw-bold mb-4">Широкий выбор автомобилей</h2>
+                        <p class="mb-4">В нашем каталоге представлены автомобили различных марок, моделей и комплектаций. Мы предлагаем как новые, так и подержанные автомобили в отличном состоянии.</p>
+                        <a href="/Carsses" class="btn btn-outline-primary">Посмотреть каталог</a>
+                    </div>
+                    <div class="col-lg-6">
+                        <img src="https://nastol.net/wallpaper/middle/106/honda-acura-nsx-widebody-khonda-akura-derevya.jpg" alt="Автомобили" class="img-fluid rounded shadow">
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Содержимое страницы политики -->
+    @if (ViewContext.RouteData.Values["action"].ToString() == "Privacy" && ViewContext.RouteData.Values["controller"].ToString() == "Home")
+    {
+        <div class="privacy-page py-5">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-primary text-white">
+                                <h1 class="card-title mb-0">
+                                    <i class="fas fa-shield-alt me-2"></i> Политика конфиденциальности
+                                </h1>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-4">
+                                    <h2 class="h4">1. Общие положения</h2>
+                                    <p>Настоящая политика конфиденциальности определяет порядок обработки и защиты информации о пользователях, которую может получить автосалон при использовании услуг сайта.</p>
+                                </div>
+
+                                <div class="mb-4">
+                                    <h2 class="h4">2. Собираемая информация</h2>
+                                    <p>Мы можем собирать следующие типы информации:</p>
+                                    <ul>
+                                        <li>Персональные данные при регистрации (имя, email, телефон)</li>
+                                        <li>Информация о посещении сайта (IP-адрес, браузер, время посещения)</li>
+                                        <li>Данные о предпочтениях (выбранные автомобили, фильтры поиска)</li>
+                                    </ul>
+                                </div>
+
+                                <div class="mb-4">
+                                    <h2 class="h4">3. Использование информации</h2>
+                                    <p>Собранная информация используется для:</p>
+                                    <ul>
+                                        <li>Предоставления услуг и улучшения качества сервиса</li>
+                                        <li>Обратной связи с пользователями</li>
+                                        <li>Персонализации контента и предложений</li>
+                                        <li>Анализа трафика и улучшения работы сайта</li>
+                                    </ul>
+                                </div>
+
+                                <div class="mb-4">
+                                    <h2 class="h4">4. Защита информации</h2>
+                                    <p>Мы принимаем все необходимые меры для защиты ваших данных от несанкционированного доступа, изменения или уничтожения. Используются современные технологии шифрования и защиты информации.</p>
+                                </div>
+
+                                <div class="alert alert-info mt-4">
+                                    <i class="fas fa-info-circle me-2"></i> Последнее обновление: @DateTime.Now.ToString("dd.MM.yyyy")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
     <footer class="footer">
         <div class="container">
             <div class="row">
@@ -288,7 +478,7 @@
                     <h5>Меню</h5>
                     <ul class="list-unstyled">
                         <li><a asp-controller="Home" asp-action="Index">Главная</a></li>
-                        <li><a asp-controller="Cars" asp-action="Index">Каталог автомобилей</a></li>
+                        <li><a asp-controller="Carsses" asp-action="Index">Каталог автомобилей</a></li>
                         <li><a asp-controller="Home" asp-action="Privacy">Гарантии и условия</a></li>
                     </ul>
                 </div>
@@ -316,7 +506,5 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
 
     @RenderSection("Scripts", required: false)
-
 </body>
 </html>
-

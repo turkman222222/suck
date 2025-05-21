@@ -54,6 +54,8 @@ namespace WebApplication3.Controllers
                 new Claim(ClaimTypes.Email, user.mail),
                 new Claim(ClaimTypes.NameIdentifier, user.id_user.ToString()),
                 new Claim(ClaimTypes.Role, user.rol_id == 2 ? "Admin" : "User")
+
+
             };
 
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -79,7 +81,7 @@ namespace WebApplication3.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register([Bind("user_name,mail,login,password")] user user)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 // Проверяем уникальность логина
                 if (await _context.user.AnyAsync(u => u.login == user.login))
@@ -145,7 +147,11 @@ namespace WebApplication3.Controllers
         // Список всех пользователей (только для админа)
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
+
         {
+            ViewBag.UserCount = _context.user.Count();
+            ViewBag.CarCount = _context.Carss.Count();
+            ViewBag.OrderCount = _context.izbr.Count();
             var users = await _context.user.Include(u => u.rol).ToListAsync();
             return View(users);
         }
@@ -173,5 +179,162 @@ namespace WebApplication3.Controllers
 
         // Остальные методы (Create, Edit, Delete) аналогично, 
         // но защищены атрибутами [Authorize]
+        // Создание пользователя (только для админа)
+        [Authorize(Roles = "Admin")]
+        public IActionResult Create()
+        {
+            ViewData["rol_id"] = new SelectList(_context.rol, "id_rol", "name_rol");
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Create([Bind("id_user,user_name,mail,login,password,rol_id")] user user)
+        {
+            if (!ModelState.IsValid)
+            {
+                // Проверка уникальности логина
+                if (await _context.user.AnyAsync(u => u.login == user.login))
+                {
+                    ModelState.AddModelError("login", "Этот логин уже занят");
+                    ViewData["rol_id"] = new SelectList(_context.rol, "id_rol", "name_rol", user.rol_id);
+                    return View(user);
+                }
+
+                // Проверка уникальности email
+                if (await _context.user.AnyAsync(u => u.mail == user.mail))
+                {
+                    ModelState.AddModelError("mail", "Этот email уже зарегистрирован");
+                    ViewData["rol_id"] = new SelectList(_context.rol, "id_rol", "name_rol", user.rol_id);
+                    return View(user);
+                }
+
+                _context.Add(user);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            ViewData["rol_id"] = new SelectList(_context.rol, "id_rol", "name_rol", user.rol_id);
+            return View(user);
+        }
+
+        // Редактирование пользователя (только для админа)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _context.user.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            ViewData["rol_id"] = new SelectList(_context.rol, "id_rol", "name_rol", user.rol_id);
+            return View(user);
+        }
+
+        
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Edit(int id, [Bind("id_user,user_name,mail,login,password,rol_id")] user user)
+        {
+            if (id != user.id_user)
+            {
+                return NotFound();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                try
+                {
+                    // Проверка уникальности логина
+                    if (await _context.user.AnyAsync(u => u.login == user.login && u.id_user != user.id_user))
+                    {
+                        ModelState.AddModelError("login", "Этот логин уже занят");
+                        ViewBag.rol_id = new SelectList(_context.rol, "id_rol", "name_rol", user.rol_id);
+                        return View(user);
+                    }
+
+                    // Проверка уникальности email
+                    if (await _context.user.AnyAsync(u => u.mail == user.mail && u.id_user != user.id_user))
+                    {
+                        ModelState.AddModelError("mail", "Этот email уже зарегистрирован");
+                        ViewBag.rol_id = new SelectList(_context.rol, "id_rol", "name_rol", user.rol_id);
+                        return View(user);
+                    }
+
+                    _context.Update(user);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!userExists(user.id_user))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Повторно загружаем роли, если ModelState невалиден
+            ViewBag.rol_id = new SelectList(_context.rol, "id_rol", "name_rol", user.rol_id);
+            return View(user);
+        }
+
+        // Удаление пользователя (только для админа)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _context.user
+                .Include(u => u.rol)
+                .FirstOrDefaultAsync(m => m.id_user == id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return View(user);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var user = await _context.user.FindAsync(id);
+            if (user != null)
+            {
+                // Нельзя удалить самого себя
+                var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                if (user.id_user == currentUserId)
+                {
+                    TempData["ErrorMessage"] = "Вы не можете удалить самого себя";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                _context.user.Remove(user);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        private bool userExists(int id)
+        {
+            return _context.user.Any(e => e.id_user == id);
+        }
     }
 }

@@ -1,6 +1,72 @@
 ﻿@{
-    ViewData["Title"] = "Privacy Policy";
+    ViewData["Title"] = "Политика конфиденциальности";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="privacy-page">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h1 class="card-title mb-0">
+                            <i class="fas fa-shield-alt me-2"></i> @ViewData["Title"]
+                        </h1>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-4">
+                            <h2 class="h4">1. Общие положения</h2>
+                            <p>Настоящая политика конфиденциальности определяет порядок обработки и защиты информации о пользователях, которую может получить автосалон при использовании услуг сайта.</p>
+                        </div>
+
+                        <div class="mb-4">
+                            <h2 class="h4">2. Собираемая информация</h2>
+                            <p>Мы можем собирать следующие типы информации:</p>
+                            <ul>
+                                <li>Персональные данные при регистрации (имя, email, телефон)</li>
+                                <li>Информация о посещении сайта (IP-адрес, браузер, время посещения)</li>
+                                <li>Данные о предпочтениях (выбранные автомобили, фильтры поиска)</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-4">
+                            <h2 class="h4">3. Использование информации</h2>
+                            <p>Собранная информация используется для:</p>
+                            <ul>
+                                <li>Предоставления услуг и улучшения качества сервиса</li>
+                                <li>Обратной связи с пользователями</li>
+                                <li>Персонализации контента и предложений</li>
+                                <li>Анализа трафика и улучшения работы сайта</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-4">
+                            <h2 class="h4">4. Защита информации</h2>
+                            <p>Мы принимаем все необходимые меры для защиты ваших данных от несанкционированного доступа, изменения или уничтожения. Используются современные технологии шифрования и защиты информации.</p>
+                        </div>
+
+                        <div class="alert alert-info mt-4">
+                            <i class="fas fa-info-circle me-2"></i> Последнее обновление: @DateTime.Now.ToString("dd.MM.yyyy")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <style>
+        .privacy-page ul {
+            padding-left: 1.5rem;
+        }
+
+        .privacy-page li {
+            margin-bottom: 0.5rem;
+        }
+
+        .card-header {
+            border-radius: 0.375rem 0.375rem 0 0 !important;
+        }
+    </style>
+}

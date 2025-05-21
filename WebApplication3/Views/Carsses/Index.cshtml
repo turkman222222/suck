@@ -10,120 +10,214 @@
 }
 
 <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1><i class="fas fa-car"></i> @ViewData["Title"]</h1>
-        @if (User.IsInRole("Admin"))
-        {
-            <a asp-action="Create" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Добавить автомобиль
-            </a>
-        }
-    </div>
+    <div class="card shadow mb-4">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h2 class="mb-0"><i class="fas fa-car me-2"></i> @ViewData["Title"]</h2>
+            <div>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <a asp-controller="izbrs" asp-action="Index" class="btn btn-outline-light me-2">
+                        <i class="fas fa-heart me-1"></i> Избранное
+                    </a>
+                }
+                @if (User.IsInRole("Admin"))
+                {
+                    <a asp-action="Create" class="btn btn-light">
+                        <i class="fas fa-plus me-1"></i> Добавить авто
+                    </a>
+                }
+            </div>
+        </div>
 
-    <!-- Форма фильтрации -->
-    <div class="mb-3">
-        <form asp-action="Index" method="get" class="row g-3">
-            <div class="col-md-3">
-                <input type="text" name="searchString" value="@ViewData["SearchString"]"
-                       class="form-control" placeholder="Поиск по модели">
-            </div>
-            <div class="col-md-2">
-                <select name="filterBrand" class="form-select">
-                    <option value="">Все марки</option>
-                    @foreach (var brand in ViewBag.Brands)
-                    {
-                        <option value="@brand.name_marka"
-                                selected="@(brand.name_marka == ViewData["BrandFilter"]?.ToString())">
-                            @brand.name_marka
-                        </option>
-                    }
-                </select>
-            </div>
-            <div class="col-md-2">
-                <input type="number" name="minPrice" value="@ViewData["MinPrice"]"
-                       class="form-control" placeholder="Цена от" min="0">
-            </div>
-            <div class="col-md-2">
-                <input type="number" name="maxPrice" value="@ViewData["MaxPrice"]"
-                       class="form-control" placeholder="Цена до" min="0">
-            </div>
-            <div class="col-md-3">
-                <button type="submit" class="btn btn-primary">Фильтровать</button>
-                <a asp-action="Index" class="btn btn-secondary">Сбросить</a>
-            </div>
-        </form>
-    </div>
-
-    <div class="row">
-        @foreach (var item in Model)
-        {
-            <div class="col-md-4 mb-4" id="car-@item.id">
-                <div class="card h-100">
-                    @if (item.image != null)
-                    {
-                        <img src="@Url.Action("GetImage", "Carsses", new { id = item.id })"
-                             class="card-img-top" alt="@item.model" style="height: 200px; object-fit: cover;">
-                    }
-                    else
-                    {
-                        <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
-                            <i class="fas fa-car fa-5x text-light"></i>
-                        </div>
-                    }
-
-                    <div class="card-body">
-                        <h5 class="card-title">@item.model</h5>
-                        <p class="card-text">
-                            <strong>Марка:</strong> @item.Marks?.name_marka<br>
-                            <strong>Год выпуска:</strong> @item.god_poiz<br>
-                            <strong>Цена:</strong> @(item.price?.ToString("N0") ?? "Цена не указана") руб.
-                        </p>
+        <div class="card-body">
+            <!-- Форма фильтрации -->
+            <div class="mb-4">
+                <form asp-action="Index" method="get" class="row g-3">
+                    <div class="col-md-3">
+                        <input type="text" name="searchString" value="@ViewData["SearchString"]"
+                               class="form-control" placeholder="Поиск по модели">
                     </div>
-
-                    <div class="card-footer bg-white">
-                        <div class="d-flex justify-content-between">
-                            <a asp-action="Details" asp-route-id="@item.id" class="btn btn-sm btn-outline-primary">
-                                <i class="fas fa-info-circle"></i> Подробнее
-                            </a>
-
-                            @if (User.IsInRole("Admin"))
+                    <div class="col-md-2">
+                        <select name="filterBrand" class="form-select">
+                            <option value="">Все марки</option>
+                            @foreach (var brand in ViewBag.Brands)
                             {
-                                <div>
-                                    <a asp-action="Edit" asp-route-id="@item.id" class="btn btn-sm btn-outline-warning">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <a asp-action="Delete" asp-route-id="@item.id" class="btn btn-sm btn-outline-danger">
-                                        <i class="fas fa-trash"></i>
-                                    </a>
+                                <option value="@brand.name_marka"
+                                        selected="@(brand.name_marka == ViewData["BrandFilter"]?.ToString())">
+                                    @brand.name_marka
+                                </option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="number" name="minPrice" value="@ViewData["MinPrice"]"
+                               class="form-control" placeholder="Цена от" min="0">
+                    </div>
+                    <div class="col-md-2">
+                        <input type="number" name="maxPrice" value="@ViewData["MaxPrice"]"
+                               class="form-control" placeholder="Цена до" min="0">
+                    </div>
+                    <div class="col-md-3 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary flex-grow-1">
+                            <i class="fas fa-filter me-1"></i> Фильтровать
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="fas fa-sync-alt"></i>
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                @foreach (var item in Model)
+                {
+                    <div class="col" id="car-@item.id">
+                        <div class="card h-100 shadow-sm car-card">
+                            @if (item.image != null)
+                            {
+                                <img src="@Url.Action("GetImage", "Carsses", new { id = item.id })"
+                                     class="card-img-top car-img" alt="@item.model">
+                            }
+                            else
+                            {
+                                <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center car-img-placeholder">
+                                    <i class="fas fa-car fa-4x text-light"></i>
                                 </div>
                             }
 
-                            <button data-car-id="@item.id" class="btn btn-sm toggle-favorite btn-outline-success">
-                                <i class="far fa-heart"></i> В избранное
-                            </button>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="card-title mb-0">@item.model</h5>
+                                    @if (item.price.HasValue)
+                                    {
+                                        <span class="badge bg-success fs-6">@item.price?.ToString("N0") руб.</span>
+                                    }
+                                </div>
+                                <div class="car-specs">
+                                    <div class="spec-item">
+                                        <i class="fas fa-tag text-muted me-2"></i>
+                                        <span>@item.Marks?.name_marka</span>
+                                    </div>
+                                    <div class="spec-item">
+                                        <i class="fas fa-calendar-alt text-muted me-2"></i>
+                                        <span>@item.god_poiz</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card-footer bg-white border-top-0">
+                                <div class="d-flex justify-content-between">
+                                    <a asp-action="Details" asp-route-id="@item.id" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-info-circle me-1"></i> Подробнее
+                                    </a>
+
+                                    <div class="d-flex gap-2">
+                                        @if (User.IsInRole("Admin"))
+                                        {
+                                            <a asp-action="Edit" asp-route-id="@item.id" class="btn btn-sm btn-outline-warning">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a asp-action="Delete" asp-route-id="@item.id" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        }
+                                        
+
+                                        @if (User.Identity.IsAuthenticated)
+                                        {
+                                            <button data-car-id="@item.id" class="btn btn-sm toggle-favorite btn-outline-success">
+                                                <i class="far fa-heart"></i>
+                                            </button>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
+                }
             </div>
-        }
+        </div>
     </div>
 </div>
 
 @section Styles {
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+    <style>
+        /* Убираем стрелочки у полей ввода типа number */
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* Для Firefox */
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        .car-card {
+            transition: all 0.3s ease;
+            border: none;
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+            .car-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            }
+
+        .car-img {
+            height: 200px;
+            object-fit: cover;
+            width: 100%;
+        }
+
+        .car-img-placeholder {
+            height: 200px;
+            width: 100%;
+        }
+
+        .car-specs {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .spec-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        .toggle-favorite {
+            transition: all 0.3s ease;
+        }
+
+        .btn-danger .fas.fa-heart {
+            color: white !important;
+        }
+
+        .card-header {
+            border-radius: 0.5rem 0.5rem 0 0 !important;
+        }
+    </style>
 }
 
 @section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
         $(document).ready(function () {
+            // Проверяем статус избранного для каждой карточки
             $('.toggle-favorite').each(function () {
                 var carId = $(this).data('car-id');
                 checkFavoriteStatus(carId);
             });
 
-            $('.toggle-favorite').click(function () {
+            // Обработчик клика по кнопке избранного
+            $(document).on('click', '.toggle-favorite', function () {
                 var carId = $(this).data('car-id');
                 toggleFavorite(carId);
             });
@@ -131,37 +225,48 @@
 
         function checkFavoriteStatus(carId) {
             $.get('@Url.Action("IsFavorite", "Carsses")', { carId: carId }, function (data) {
-                var button = $(`button[data-car-id="${carId}"]`);
-                if (data.isFavorite) {
-                    button.html('<i class="fas fa-heart text-danger"></i> В избранном');
-                    button.removeClass('btn-outline-success').addClass('btn-danger');
-                }
+                updateFavoriteButton(carId, data.isFavorite);
+            }).fail(function () {
+                console.error('Ошибка при проверке статуса избранного');
             });
         }
 
         function toggleFavorite(carId) {
-            $.post('@Url.Action("ToggleFavorite", "Carsses")', { carId: carId })
+            $.ajax({
+                url: '@Url.Action("ToggleFavorite", "Carsses")',
+                type: 'POST',
+                data: { carId: carId },
+                headers: {
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                }
+            })
                 .done(function (data) {
                     if (data.success) {
-                        var button = $(`button[data-car-id="${carId}"]`);
-                        if (data.isFavorite) {
-                            button.html('<i class="fas fa-heart text-danger"></i> В избранном');
-                            button.removeClass('btn-outline-success').addClass('btn-danger');
-                        } else {
-                            button.html('<i class="far fa-heart"></i> В избранное');
-                            button.removeClass('btn-danger').addClass('btn-outline-success');
-                        }
+                        updateFavoriteButton(carId, data.isFavorite);
                         toastr.success(data.message);
                     } else {
-                        toastr.warning(data.message);
-                        if (data.message.includes("авторизация")) {
-                            window.location.href = '@Url.Action("Login", "Account")';
-                        }
+                        toastr.error(data.message);
                     }
                 })
-                .fail(function () {
-                    toastr.error('Произошла ошибка при обработке запроса');
+                .fail(function (xhr) {
+                    if (xhr.status === 401) {
+                        toastr.warning('Для добавления в избранное необходимо авторизоваться');
+                        window.location.href = '@Url.Action("Login", "Account")';
+                    } else {
+                        toastr.error('Произошла ошибка: ' + xhr.responseText);
+                    }
                 });
+        }
+
+        function updateFavoriteButton(carId, isFavorite) {
+            var button = $(`button[data-car-id="${carId}"]`);
+            if (isFavorite) {
+                button.html('<i class="fas fa-heart"></i>');
+                button.removeClass('btn-outline-success').addClass('btn-danger');
+            } else {
+                button.html('<i class="far fa-heart"></i>');
+                button.removeClass('btn-danger').addClass('btn-outline-success');
+            }
         }
     </script>
 }

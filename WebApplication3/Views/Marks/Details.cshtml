@@ -1,24 +1,35 @@
 ﻿@model WebApplication3.Models.Marks
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Подробности о марке";
 }
 
-<h1>Details</h1>
-
-<div>
-    <h4>Marks</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.name_marka)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.name_marka)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+<div class="container">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h3 class="m-0 font-weight-bold text-primary">@ViewData["Title"]</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <dl class="row">
+                        <dt class="col-sm-3 font-weight-bold">
+                            @Html.DisplayNameFor(model => model.name_marka)
+                        </dt>
+                        <dd class="col-sm-9">
+                            @Html.DisplayFor(model => model.name_marka)
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+            <div class="mt-4">
+                <a asp-action="Edit" asp-route-id="@Model.id" class="btn btn-primary">
+                    <i class="fas fa-edit"></i> Редактировать
+                </a>
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Назад к списку
+                </a>
+            </div>
+        </div>
+    </div>
 </div>

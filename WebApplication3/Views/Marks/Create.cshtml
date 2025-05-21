@@ -1,33 +1,41 @@
 ﻿@model WebApplication3.Models.Marks
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Добавить марку";
 }
 
-<h1>Create</h1>
-
-<h4>Marks</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="name_marka" class="control-label"></label>
-                <input asp-for="name_marka" class="form-control" />
-                <span asp-validation-for="name_marka" class="text-danger"></span>
+<div class="container">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h3 class="m-0 font-weight-bold text-primary">@ViewData["Title"]</h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-group">
+                            <label asp-for="name_marka" class="control-label font-weight-bold">Название марки</label>
+                            <input asp-for="name_marka" class="form-control" placeholder="Введите название марки" />
+                            <span asp-validation-for="name_marka" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Создать
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Назад к списку
+                            </a>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
