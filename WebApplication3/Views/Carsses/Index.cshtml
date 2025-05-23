@@ -1,6 +1,10 @@
 ﻿@model IEnumerable<WebApplication3.Models.Carss>
 @using Microsoft.AspNetCore.Authorization
 @inject IAuthorizationService AuthorizationService
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "__AjaxAntiForgeryForm" }))
+{
+    @Html.AntiForgeryToken()
+}
 
 @{
     ViewData["Title"] = "Каталог автомобилей";
@@ -121,7 +125,6 @@
                                                 <i class="fas fa-trash"></i>
                                             </a>
                                         }
-                                        
 
                                         @if (User.Identity.IsAuthenticated)
                                         {
@@ -206,10 +209,11 @@
     </style>
 }
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 @section Scripts {
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
     <script>
-        $(document).ready(function () {
+                $(document).ready(function () {
             // Проверяем статус избранного для каждой карточки
             $('.toggle-favorite').each(function () {
                 var carId = $(this).data('car-id');
@@ -225,48 +229,54 @@
 
         function checkFavoriteStatus(carId) {
             $.get('@Url.Action("IsFavorite", "Carsses")', { carId: carId }, function (data) {
-                updateFavoriteButton(carId, data.isFavorite);
+                var button = $(`.toggle-favorite[data-car-id="${carId}"]`);
+                if (data.isFavorite) {
+                    button.html('<i class="fas fa-heart"></i>');
+                    button.removeClass('btn-outline-success').addClass('btn-danger');
+                } else {
+                    button.html('<i class="far fa-heart"></i>');
+                    button.removeClass('btn-danger').addClass('btn-outline-success');
+                }
             }).fail(function () {
                 console.error('Ошибка при проверке статуса избранного');
             });
         }
 
         function toggleFavorite(carId) {
+            var token = $('input[name="__RequestVerificationToken"]').val();
+
             $.ajax({
                 url: '@Url.Action("ToggleFavorite", "Carsses")',
                 type: 'POST',
-                data: { carId: carId },
-                headers: {
-                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
-                }
-            })
-                .done(function (data) {
+                data: {
+                    carId: carId,
+                    __RequestVerificationToken: token
+                },
+                success: function (data) {
                     if (data.success) {
-                        updateFavoriteButton(carId, data.isFavorite);
-                        toastr.success(data.message);
+                        var button = $(`.toggle-favorite[data-car-id="${carId}"]`);
+                        if (data.isFavorite) {
+                            button.html('<i class="fas fa-heart"></i>');
+                            button.removeClass('btn-outline-success').addClass('btn-danger');
+                            toastr.success(data.message);
+                        } else {
+                            button.html('<i class="far fa-heart"></i>');
+                            button.removeClass('btn-danger').addClass('btn-outline-success');
+                            toastr.info(data.message);
+                        }
                     } else {
                         toastr.error(data.message);
                     }
-                })
-                .fail(function (xhr) {
+                },
+                error: function (xhr) {
                     if (xhr.status === 401) {
                         toastr.warning('Для добавления в избранное необходимо авторизоваться');
                         window.location.href = '@Url.Action("Login", "Account")';
                     } else {
                         toastr.error('Произошла ошибка: ' + xhr.responseText);
                     }
-                });
-        }
-
-        function updateFavoriteButton(carId, isFavorite) {
-            var button = $(`button[data-car-id="${carId}"]`);
-            if (isFavorite) {
-                button.html('<i class="fas fa-heart"></i>');
-                button.removeClass('btn-outline-success').addClass('btn-danger');
-            } else {
-                button.html('<i class="far fa-heart"></i>');
-                button.removeClass('btn-danger').addClass('btn-outline-success');
-            }
+                }
+            });
         }
     </script>
 }

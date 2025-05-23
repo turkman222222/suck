@@ -55,7 +55,7 @@ namespace WebApplication3.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("id,kompl_name")] compl compl)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 _context.Add(compl);
                 await _context.SaveChangesAsync();
@@ -92,7 +92,7 @@ namespace WebApplication3.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 try
                 {

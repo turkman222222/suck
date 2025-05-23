@@ -77,7 +77,7 @@ namespace WebApplication3.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("id,name_marka")] Marks marks)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 _context.Add(marks);
                 await _context.SaveChangesAsync();
@@ -114,7 +114,7 @@ namespace WebApplication3.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 try
                 {

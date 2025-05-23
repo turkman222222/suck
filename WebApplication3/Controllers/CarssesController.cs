@@ -269,7 +269,7 @@ namespace WebApplication3.Controllers
         }
 
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Delete(int? id, bool? saveChangesError = false)
+        public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
 
@@ -283,12 +283,6 @@ namespace WebApplication3.Controllers
 
             if (car == null) return NotFound();
 
-            if (saveChangesError.GetValueOrDefault())
-            {
-                ViewData["ErrorMessage"] =
-                    "Не удалось удалить. Попробуйте еще раз, и если проблема сохранится, обратитесь к системному администратору.";
-            }
-
             return View(car);
         }
         
@@ -296,7 +290,7 @@ namespace WebApplication3.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            using (var transaction = await _context.Database.BeginTransactionAsync())
+          
             {
                 var carss = await _context.Carss.FindAsync(id);
                 if (carss != null)
@@ -309,6 +303,9 @@ namespace WebApplication3.Controllers
             }
         }
       
+
+
+
     }
 }
 

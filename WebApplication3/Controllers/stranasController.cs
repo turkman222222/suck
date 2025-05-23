@@ -55,7 +55,7 @@ namespace WebApplication3.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("id,strana_name")] strana strana)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 _context.Add(strana);
                 await _context.SaveChangesAsync();
